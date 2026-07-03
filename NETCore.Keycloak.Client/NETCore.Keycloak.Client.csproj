@@ -1,19 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>Hasni Mehdi</Authors>
+    <Authors>Faizan Ali</Authors>
     <Description>
-      A comprehensive .NET Core client library for Keycloak that provides seamless integration with Keycloak's authentication and authorization services.
-      This library offers a robust implementation of Keycloak's REST API, including support for OpenID Connect, OAuth 2.0, and User-Managed Access (UMA 2.0).
+        Community-maintained .NET client library for the Keycloak Admin REST API.
+        Based on the original NETCore.Keycloak project with additional features,
+        bug fixes, and support for newer Keycloak releases.
     </Description>
-    <PackageVersion>2.0.0</PackageVersion>
-    <PackageId>Keycloak.NETCore.Client</PackageId>
+    <PackageVersion>2.0.1</PackageVersion>
+    <PackageId>Net.Keycloak.Contrib</PackageId>
     <PackageTags>keycloak;oauth2;authentication;authorization;openid-connect;oidc;oidc-provider;fapi;fapi-client;user-managed-access;financial-security</PackageTags>
-    <PackageIcon>black_cockpit.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Black-Cockpit/NETCore.Keycloak.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/fa9566509/Net.Keycloak.Contrib.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/Black-Cockpit/NETCore.Keycloak</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/fa9566509/Net.Keycloak.Contrib.git</PackageProjectUrl>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -33,7 +34,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 
-    <None Include="black_cockpit.png" Pack="true" PackagePath="\" />
+    <None Include="logo.png" Pack="true" PackagePath="\" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

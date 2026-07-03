@@ -1,50 +1,58 @@
 name: Deploy
+
 on:
   pull_request:
     types:
       - closed
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  # Deploy nuget package when a branch is labeled with `release` and the merge is done to master, or when triggered manually.
   Deploy:
-    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release') && github.event.pull_request.base.ref == 'master')
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.merged == true &&
+        contains(github.event.pull_request.labels.*.name, 'release') &&
+        (
+          github.event.pull_request.base.ref == 'main' ||
+          github.event.pull_request.base.ref == 'master'
+        )
+      )
+
     runs-on: ubuntu-24.04
+
     strategy:
       matrix:
         dotnet-version: [10.0.x]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      # Setup .NET SDK
-      - name: Set up .NET SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      # Setup cake tool
-      - name: Setup cake tool
+      - name: Install Cake
         run: dotnet tool install --global Cake.Tool
 
-      # Build the project
-      - name: Build project
-        if: success()
+      - name: Build
         run: |
-          # Copy Licence
           cp LICENSE NETCore.Keycloak.Client/
+          dotnet cake build.cake --target=Build
 
-          # Build project
-          dotnet cake build.cake --target=build
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USERNAME }}
 
-      # Deploy nuget package
-      - name: Deploy nuget package
-        if: success()
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      - name: Publish package
         run: |
-          # Extract nuget package version
-          NUGET_PKG_VERSION=$(cat NETCore.Keycloak.Client/NETCore.Keycloak.Client.csproj | grep "PackageVersion" | awk -F '>' '{print $2}' | awk -F '<' '{print $1}')
-
-          # Deploy package
-          dotnet nuget push NETCore.Keycloak.Client/bin/Release/Keycloak.NETCore.Client.${NUGET_PKG_VERSION}.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+          dotnet nuget push \
+            NETCore.Keycloak.Client/bin/Release/*.nupkg \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json
